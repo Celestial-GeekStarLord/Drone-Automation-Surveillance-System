@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'home_page.dart';
 import 'login_page.dart';
 
 void main() {
-  runApp(DASSApp());
+  runApp(DASS());
 }
 
-class DASSApp extends StatelessWidget {
+class DASS extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -13,6 +14,9 @@ class DASSApp extends StatelessWidget {
       title: 'DASS',
       theme: ThemeData(primarySwatch: Colors.blue),
       home: LoginPage(),
+      routes: {
+        '/home': (context) => HomePage(),
+      },
     );
   }
 }
