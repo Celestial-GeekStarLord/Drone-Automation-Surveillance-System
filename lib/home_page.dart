@@ -22,7 +22,7 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       isDroneConnected = true;
       notifications.add("Drone connected successfully.");
-      notifications.add("New detection: 4 objects identified.");
+      notifications.add("New detection: Persons objects identified.");
     });
   }
 
