@@ -1,8 +1,67 @@
 import 'package:flutter/material.dart';
-import 'register_page.dart'; // Import register_page.dart
+import 'package:firebase_auth/firebase_auth.dart'; // Import FirebaseAuth
+import 'register_page.dart'; // Import RegisterPage
 
-class LoginPage extends StatelessWidget {
-  TextEditingController authcontroller=TextEditingController();
+class LoginPage extends StatefulWidget {
+  @override
+  _LoginPageState createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  final TextEditingController usernameController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  bool rememberMe = false;
+  bool isLoading = false;
+
+  Future<void> _login() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      // Perform Firebase Authentication
+      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+        email: usernameController.text.trim(),
+        password: passwordController.text.trim(),
+      );
+
+      User? user = FirebaseAuth.instance.currentUser;
+
+      // Check if email is verified
+      if (user != null && !user.emailVerified) {
+        await FirebaseAuth.instance.signOut(); // Log out the user
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Please verify your email address before logging in.',
+            ),
+          ),
+        );
+      } else {
+        // Navigate to HomePage after successful login and verification
+        Navigator.pushReplacementNamed(context, '/home');
+      }
+    } on FirebaseAuthException catch (e) {
+      String errorMessage;
+      if (e.code == 'user-not-found') {
+        errorMessage = 'No user found for that email.';
+      } else if (e.code == 'wrong-password') {
+        errorMessage = 'Wrong password provided.';
+      } else {
+        errorMessage = 'Something went wrong. Please try again.';
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(errorMessage)),
+      );
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -19,11 +78,10 @@ class LoginPage extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24.0),
                 child: TextField(
-                  controller: authcontroller,
+                  controller: usernameController,
                   decoration: InputDecoration(
                     prefixIcon: Icon(Icons.person),
-                    hintText: 'Username',
-                    suffixIcon:Icon(Icons.mail),
+                    hintText: 'Email',
                     border: OutlineInputBorder(),
                   ),
                 ),
@@ -32,6 +90,7 @@ class LoginPage extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24.0),
                 child: TextField(
+                  controller: passwordController,
                   obscureText: true,
                   decoration: InputDecoration(
                     prefixIcon: Icon(Icons.lock),
@@ -44,20 +103,33 @@ class LoginPage extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Checkbox(value: false, onChanged: (value) {}),
+                  Checkbox(
+                    value: rememberMe,
+                    onChanged: (value) {
+                      setState(() {
+                        rememberMe = value!;
+                      });
+                    },
+                  ),
                   Text('Remember me'),
                   Spacer(),
-                  TextButton(onPressed: () {}, child: Text('Forgot password?')),
+                  TextButton(
+                    onPressed: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Forgot password clicked!')),
+                      );
+                    },
+                    child: Text('Forgot password?'),
+                  ),
                 ],
               ),
               SizedBox(height: 10),
-              ElevatedButton(
-                onPressed: () {
-                  // Navigate to HomePage after login
-                  Navigator.pushReplacementNamed(context, '/home');
-                },
-                child: Text('Login'),
-              ),
+              isLoading
+                  ? CircularProgressIndicator()
+                  : ElevatedButton(
+                      onPressed: _login, // Call login logic
+                      child: Text('Login'),
+                    ),
               SizedBox(height: 10),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -65,7 +137,6 @@ class LoginPage extends StatelessWidget {
                   Text("Not an account?"),
                   TextButton(
                     onPressed: () {
-                      // Navigate to RegisterPage when "Sign up here" is clicked
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => RegisterPage()),
