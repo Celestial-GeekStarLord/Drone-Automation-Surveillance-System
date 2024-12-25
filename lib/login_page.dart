@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'register_page.dart'; // Import register_page.dart
 
 class LoginPage extends StatelessWidget {
+  TextEditingController authcontroller=TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -18,9 +19,11 @@ class LoginPage extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24.0),
                 child: TextField(
+                  controller: authcontroller,
                   decoration: InputDecoration(
                     prefixIcon: Icon(Icons.person),
                     hintText: 'Username',
+                    suffixIcon:Icon(Icons.mail),
                     border: OutlineInputBorder(),
                   ),
                 ),

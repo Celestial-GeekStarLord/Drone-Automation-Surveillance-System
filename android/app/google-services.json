@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "1004728323543",
+    "firebase_url": "https://dass-bf4d6-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "dass-bf4d6",
+    "storage_bucket": "dass-bf4d6.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1004728323543:android:a21e4eb183067cfd408f92",
+        "android_client_info": {
+          "package_name": "com.example.dass"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD9NR5u44W5pMZhRHpqEninLkLMfCuAcno"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
