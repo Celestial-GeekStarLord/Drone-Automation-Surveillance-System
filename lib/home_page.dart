@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'about_page.dart';
+import 'sensors_page.dart';
+import 'account_page.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -10,19 +13,12 @@ class _HomePageState extends State<HomePage> {
   bool isDroneConnected = false; // Tracks drone connection status
   List<String> notifications = []; // Stores notifications
 
-  final List<Widget> _pages = [
-    DroneDetectionPage(),
-    SensorPage(),
-    AboutPage(),
-    AccountPage(),
-  ];
-
   // Simulate drone connection for demonstration
   void connectDrone() {
     setState(() {
       isDroneConnected = true;
       notifications.add("Drone connected successfully.");
-      notifications.add("New detection: Persons objects identified.");
+      notifications.add("New detection: Persons or objects identified.");
     });
   }
 
@@ -57,7 +53,15 @@ class _HomePageState extends State<HomePage> {
               fit: BoxFit.cover,
             ),
           ),
-          _pages[_currentIndex],
+          // Displaying the appropriate page
+          if (_currentIndex == 0)
+            DroneDetectionPage(isDroneConnected: isDroneConnected)
+          else if (_currentIndex == 1)
+            SensorsPage()
+          else if (_currentIndex == 2)
+              AboutPage()
+            else if (_currentIndex == 3)
+                AccountPage(),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -114,8 +118,8 @@ class _HomePageState extends State<HomePage> {
               Divider(),
               if (isDroneConnected && notifications.isNotEmpty)
                 ...notifications.map((notification) => ListTile(
-                      title: Text(notification),
-                    ))
+                  title: Text(notification),
+                ))
               else
                 Center(
                   child: Text(
@@ -132,47 +136,33 @@ class _HomePageState extends State<HomePage> {
 }
 
 class DroneDetectionPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text(
-        'Drone Detection Page',
-        style: TextStyle(fontSize: 20, color: Colors.white),
-      ),
-    );
-  }
-}
+  final bool isDroneConnected;
 
-class SensorPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text(
-        'Sensor Page',
-        style: TextStyle(fontSize: 20, color: Colors.white),
-      ),
-    );
-  }
-}
+  const DroneDetectionPage({required this.isDroneConnected});
 
-class AboutPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Text(
-        'About Page',
-        style: TextStyle(fontSize: 20, color: Colors.white),
-      ),
-    );
-  }
-}
-
-class AccountPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text(
-        'Account Page',
+      child: isDroneConnected
+          ? Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Image.asset(
+            'assets/image/drone_image.png',
+            height: 200,
+            width: 200,
+            fit: BoxFit.contain,
+          ),
+          SizedBox(height: 20),
+          Text(
+            'Live Data from Drone',
+            style: TextStyle(fontSize: 20, color: Colors.white),
+          ),
+        ],
+      )
+          : Text(
+        'Drone is not connected.\nPlease connect to view data.',
+        textAlign: TextAlign.center,
         style: TextStyle(fontSize: 20, color: Colors.white),
       ),
     );
