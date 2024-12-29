@@ -54,14 +54,14 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
           // Displaying the appropriate page
-          if (_currentIndex == 0)
+         /* if (_currentIndex == 0)
             DroneDetectionPage(isDroneConnected: isDroneConnected)
           else if (_currentIndex == 1)
             SensorsPage()
           else if (_currentIndex == 2)
               AboutPage()
             else if (_currentIndex == 3)
-                AccountPage(),
+                AccountPage(), */
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
