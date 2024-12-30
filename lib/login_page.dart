@@ -82,7 +82,9 @@ class _LoginPageState extends State<LoginPage> {
                   decoration: InputDecoration(
                     prefixIcon: Icon(Icons.person),
                     hintText: 'Email',
-                    border: OutlineInputBorder(),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
                   ),
                 ),
               ),
@@ -95,7 +97,9 @@ class _LoginPageState extends State<LoginPage> {
                   decoration: InputDecoration(
                     prefixIcon: Icon(Icons.lock),
                     hintText: 'Password',
-                    border: OutlineInputBorder(),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
                   ),
                 ),
               ),
@@ -114,10 +118,35 @@ class _LoginPageState extends State<LoginPage> {
                   Text('Remember me'),
                   Spacer(),
                   TextButton(
-                    onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Forgot password clicked!')),
-                      );
+                    onPressed: () async {
+                      if (usernameController.text.isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                              content:
+                                  Text('Please enter your email address.')),
+                        );
+                        return;
+                      }
+
+                      try {
+                        await _auth.sendPasswordResetEmail(
+                            email: usernameController.text.trim());
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Password reset email sent!')),
+                        );
+                      } on FirebaseAuthException catch (e) {
+                        String errorMessage;
+                        if (e.code == 'user-not-found') {
+                          errorMessage = 'No user found for that email.';
+                        } else {
+                          errorMessage =
+                              'Something went wrong. Please try again.';
+                        }
+
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(errorMessage)),
+                        );
+                      }
                     },
                     child: Text('Forgot password?'),
                   ),

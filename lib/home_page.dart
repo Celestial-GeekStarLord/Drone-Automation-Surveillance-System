@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'about_page.dart';
-import 'sensors_page.dart';
-import 'account_page.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -53,15 +50,7 @@ class _HomePageState extends State<HomePage> {
               fit: BoxFit.cover,
             ),
           ),
-          // Displaying the appropriate page
-         /* if (_currentIndex == 0)
-            DroneDetectionPage(isDroneConnected: isDroneConnected)
-          else if (_currentIndex == 1)
-            SensorsPage()
-          else if (_currentIndex == 2)
-              AboutPage()
-            else if (_currentIndex == 3)
-                AccountPage(), */
+
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
