@@ -70,6 +70,12 @@ class _LoginPageState extends State<LoginPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              // Logo Image
+              Image.asset(
+                'assets/image/logo.png',
+                height: 100,
+                width: 100,
+              ),
               Text(
                 'Welcome back',
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
