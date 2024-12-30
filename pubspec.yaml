@@ -10,7 +10,7 @@ environment:
 dependencies:
    # Core Firebase package
   firebase_auth: ^5.3.4
-  firebase_database: ^10.0.11  # Realtime Database
+  firebase_database: ^11.2.0 # Realtime Database
   #firebase_storage: ^11.1.0  # (Optional) Firebase Storage for images
   flutter:
     sdk: flutter
