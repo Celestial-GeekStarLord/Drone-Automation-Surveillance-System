@@ -54,32 +54,46 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-        type: BottomNavigationBarType.fixed,
-        items: [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.sensors),
-            label: 'Sensors',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.info),
-            label: 'About',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.account_circle),
-            label: 'Account',
-          ),
-        ],
-      ),
+  currentIndex: _currentIndex,
+  onTap: (index) {
+    setState(() {
+      _currentIndex = index;
+    });
+    switch (index) {
+      case 0:
+        Navigator.pushNamed(context, '/home');
+        break;
+      case 1:
+        Navigator.pushNamed(context, '/sensors');
+        break;
+      case 2:
+        Navigator.pushNamed(context, '/about');
+        break;
+      case 3:
+        Navigator.pushNamed(context, '/account');
+        break;
+    }
+  },
+  type: BottomNavigationBarType.fixed,
+  items: [
+    BottomNavigationBarItem(
+      icon: Icon(Icons.home),
+      label: 'Home',
+    ),
+    BottomNavigationBarItem(
+      icon: Icon(Icons.sensors),
+      label: 'Sensors',
+    ),
+    BottomNavigationBarItem(
+      icon: Icon(Icons.info),
+      label: 'About',
+    ),
+    BottomNavigationBarItem(
+      icon: Icon(Icons.account_circle),
+      label: 'Account',
+    ),
+  ],
+),
       floatingActionButton: FloatingActionButton(
         onPressed: connectDrone, // Simulate drone connection
         child: Icon(Icons.link),
