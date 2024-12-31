@@ -82,7 +82,7 @@ class SensorsPage extends StatelessWidget {
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: 1,
-        selectedItemColor: Colors.black,
+        selectedItemColor: Colors.blue,
         unselectedItemColor: Colors.grey,
         items: const [
           BottomNavigationBarItem(

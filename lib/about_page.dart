@@ -42,10 +42,23 @@ class _AboutPageState extends State<AboutPage> {
           children: [
             SizedBox(height: 20), // Space above the logo
             Center(
-              child: Image.asset(
-                'assets/image/logo.png',
-                height: 100,
-                width: 100,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    'assets/image/logo.png',
+                    height: 100,
+                    width: 100,
+                  ),
+                  SizedBox(height: 10), // Add some space between the image and the text
+                  Text(
+                    'DASS',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
               ),
             ),
             SizedBox(height: 20), // Space below the logo
