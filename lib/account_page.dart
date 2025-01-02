@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class AccountPage extends StatefulWidget {
   @override
@@ -6,22 +7,51 @@ class AccountPage extends StatefulWidget {
 }
 
 class _AccountPageState extends State<AccountPage> {
-  // Tracks expanded state for each option
-  Map<String, bool> _isExpanded = {
-    "Profile": false,
-    "Change Password": false,
-    "Forget Password": false,
-  };
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  User? _user;
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
-  // Descriptions for each option
-  final Map<String, String> _descriptions = {
-    "Profile": "View and update your profile information here.",
-    "Change Password": "Change your account password for security purposes.",
-    "Forget Password": "Reset your password if you've forgotten it.",
-  };
+  @override
+  void initState() {
+    super.initState();
+    _user = _auth.currentUser;
+    if (_user != null) {
+      _emailController.text = _user!.email!;
+    }
+  }
 
-  // Replace this with the actual user email
-  final String userEmail = "example@mail.com";
+  Future<void> _updateEmail() async {
+    try {
+      await _user!.verifyBeforeUpdateEmail(_emailController.text);
+      await _user!.sendEmailVerification();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content:
+                Text('Verification email sent to ${_emailController.text}')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to update email: $e')),
+      );
+    }
+  }
+
+  Future<void> _updatePassword() async {
+    try {
+      await _user!.updatePassword(_passwordController.text);
+      await _user!.sendEmailVerification();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text(
+                'Password updated successfully. Verification email sent to ${_user!.email}')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to update password: $e')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +74,7 @@ class _AccountPageState extends State<AccountPage> {
                   radius: 40,
                   backgroundColor: Colors.blue,
                   child: Text(
-                    userEmail[0].toUpperCase(), // First letter of the email
+                    _user != null ? _user!.email![0].toUpperCase() : '',
                     style: TextStyle(
                       fontSize: 40,
                       color: Colors.white,
@@ -53,7 +83,7 @@ class _AccountPageState extends State<AccountPage> {
                 ),
                 SizedBox(height: 10),
                 Text(
-                  userEmail,
+                  _user != null ? _user!.email! : '',
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -68,60 +98,84 @@ class _AccountPageState extends State<AccountPage> {
           Expanded(
             child: Container(
               color: Color(0xFFAADAE9), // Background for the lower section
-              child: ListView.builder(
+              child: ListView(
                 padding: EdgeInsets.all(16),
-                itemCount: _isExpanded.keys.length,
-                itemBuilder: (context, index) {
-                  String title = _isExpanded.keys.elementAt(index);
-                  return Card(
+                children: [
+                  Card(
                     margin: EdgeInsets.symmetric(vertical: 8),
                     elevation: 2,
                     child: Column(
                       children: [
-                        // List item with title and toggle icon
                         ListTile(
                           title: Text(
-                            title,
+                            'Profile',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
                               color: Colors.black87,
                             ),
                           ),
-                          trailing: Icon(
-                            _isExpanded[title]!
-                                ? Icons.keyboard_arrow_up
-                                : Icons.keyboard_arrow_down,
-                            color: Colors.black54,
-                          ),
-                          onTap: () {
-                            setState(() {
-                              _isExpanded[title] = !_isExpanded[title]!;
-                            });
-                          },
+                          trailing: Icon(Icons.keyboard_arrow_down,
+                              color: Colors.black54),
                         ),
-                        // Expanded description with animation
-                        AnimatedCrossFade(
-                          firstChild: SizedBox.shrink(),
-                          secondChild: Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: Text(
-                              _descriptions[title]!,
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey[700],
+                        Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            children: [
+                              TextField(
+                                controller: _emailController,
+                                decoration: InputDecoration(labelText: 'Email'),
                               ),
-                            ),
+                              SizedBox(height: 10),
+                              ElevatedButton(
+                                onPressed: _updateEmail,
+                                child: Text('Update Email'),
+                              ),
+                            ],
                           ),
-                          crossFadeState: _isExpanded[title]!
-                              ? CrossFadeState.showSecond
-                              : CrossFadeState.showFirst,
-                          duration: Duration(milliseconds: 300),
                         ),
                       ],
                     ),
-                  );
-                },
+                  ),
+                  Card(
+                    margin: EdgeInsets.symmetric(vertical: 8),
+                    elevation: 2,
+                    child: Column(
+                      children: [
+                        ListTile(
+                          title: Text(
+                            'Change Password',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                              color: Colors.black87,
+                            ),
+                          ),
+                          trailing: Icon(Icons.keyboard_arrow_down,
+                              color: Colors.black54),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            children: [
+                              TextField(
+                                controller: _passwordController,
+                                decoration:
+                                    InputDecoration(labelText: 'New Password'),
+                                obscureText: true,
+                              ),
+                              SizedBox(height: 10),
+                              ElevatedButton(
+                                onPressed: _updatePassword,
+                                child: Text('Update Password'),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
