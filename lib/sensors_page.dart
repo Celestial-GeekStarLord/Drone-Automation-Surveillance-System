@@ -5,10 +5,10 @@ class SensorsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     // Sensor data (can be dynamically fetched)
     final List<Map<String, dynamic>> sensors = [
-      {'name': 'GPS', 'status': 'Active'},
-      {'name': 'Gas', 'status': 'Active'},
+      {'name': 'GPS', 'status': 'Inactive'},
+      {'name': 'Gas', 'status': 'Inactive'},
       {'name': 'Temperature', 'status': 'Inactive'},
-      {'name': 'Ultrasonic', 'status': 'Active'},
+      {'name': 'Ultrasonic', 'status': 'Inactive'},
       {'name': 'PIR', 'status': 'Inactive'},
     ];
 
@@ -82,6 +82,7 @@ class SensorsPage extends StatelessWidget {
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: 1,
+        type: BottomNavigationBarType.fixed,
         selectedItemColor: Colors.blue,
         unselectedItemColor: Colors.grey,
         items: const [
