@@ -27,6 +27,7 @@ class DASS extends StatelessWidget {
         '/sensors': (context) => SensorsPage(),
         '/about': (context) => AboutPage(),
         '/account': (context) => AccountPage(),
+        '/login':(context)=> LoginPage(),
       },
     );
   }

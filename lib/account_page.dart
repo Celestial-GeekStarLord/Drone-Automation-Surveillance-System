@@ -12,6 +12,12 @@ class _AccountPageState extends State<AccountPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
+  Map<String, bool> _isExpanded = {
+    "Profile": false,
+    "Change Password": false,
+    "Logout": false,
+  };
+
   @override
   void initState() {
     super.initState();
@@ -28,7 +34,7 @@ class _AccountPageState extends State<AccountPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
             content:
-                Text('Verification email sent to ${_emailController.text}')),
+            Text('Verification email sent to ${_emailController.text}')),
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -40,17 +46,19 @@ class _AccountPageState extends State<AccountPage> {
   Future<void> _updatePassword() async {
     try {
       await _user!.updatePassword(_passwordController.text);
-      await _user!.sendEmailVerification();
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text(
-                'Password updated successfully. Verification email sent to ${_user!.email}')),
+        SnackBar(content: Text('Password updated successfully.')),
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to update password: $e')),
       );
     }
+  }
+
+  Future<void> _logout() async {
+    await _auth.signOut();
+    Navigator.pushReplacementNamed(context, '/login'); // Redirect to login page
   }
 
   @override
@@ -101,6 +109,7 @@ class _AccountPageState extends State<AccountPage> {
               child: ListView(
                 padding: EdgeInsets.all(16),
                 children: [
+                  // Profile Section
                   Card(
                     margin: EdgeInsets.symmetric(vertical: 8),
                     elevation: 2,
@@ -115,28 +124,47 @@ class _AccountPageState extends State<AccountPage> {
                               color: Colors.black87,
                             ),
                           ),
-                          trailing: Icon(Icons.keyboard_arrow_down,
-                              color: Colors.black54),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Column(
-                            children: [
-                              TextField(
-                                controller: _emailController,
-                                decoration: InputDecoration(labelText: 'Email'),
-                              ),
-                              SizedBox(height: 10),
-                              ElevatedButton(
-                                onPressed: _updateEmail,
-                                child: Text('Update Email'),
-                              ),
-                            ],
+                          trailing: Icon(
+                            _isExpanded["Profile"]!
+                                ? Icons.keyboard_arrow_up
+                                : Icons.keyboard_arrow_down,
+                            color: Colors.black54,
                           ),
+                          onTap: () {
+                            setState(() {
+                              _isExpanded["Profile"] =
+                              !_isExpanded["Profile"]!;
+                            });
+                          },
+                        ),
+                        AnimatedCrossFade(
+                          firstChild: SizedBox.shrink(),
+                          secondChild: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              children: [
+                                TextField(
+                                  controller: _emailController,
+                                  decoration:
+                                  InputDecoration(labelText: 'Email'),
+                                ),
+                                SizedBox(height: 10),
+                                ElevatedButton(
+                                  onPressed: _updateEmail,
+                                  child: Text('Update Email'),
+                                ),
+                              ],
+                            ),
+                          ),
+                          crossFadeState: _isExpanded["Profile"]!
+                              ? CrossFadeState.showSecond
+                              : CrossFadeState.showFirst,
+                          duration: Duration(milliseconds: 300),
                         ),
                       ],
                     ),
                   ),
+                  // Change Password Section
                   Card(
                     margin: EdgeInsets.symmetric(vertical: 8),
                     elevation: 2,
@@ -151,27 +179,114 @@ class _AccountPageState extends State<AccountPage> {
                               color: Colors.black87,
                             ),
                           ),
-                          trailing: Icon(Icons.keyboard_arrow_down,
-                              color: Colors.black54),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Column(
-                            children: [
-                              TextField(
-                                controller: _passwordController,
-                                decoration:
-                                    InputDecoration(labelText: 'New Password'),
-                                obscureText: true,
-                              ),
-                              SizedBox(height: 10),
-                              ElevatedButton(
-                                onPressed: _updatePassword,
-                                child: Text('Update Password'),
-                              ),
-                            ],
+                          trailing: Icon(
+                            _isExpanded["Change Password"]!
+                                ? Icons.keyboard_arrow_up
+                                : Icons.keyboard_arrow_down,
+                            color: Colors.black54,
                           ),
+                          onTap: () {
+                            setState(() {
+                              _isExpanded["Change Password"] =
+                              !_isExpanded["Change Password"]!;
+                            });
+                          },
                         ),
+                        AnimatedCrossFade(
+                          firstChild: SizedBox.shrink(),
+                          secondChild: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              children: [
+                                TextField(
+                                  controller: _passwordController,
+                                  decoration: InputDecoration(
+                                      labelText: 'New Password'),
+                                  obscureText: true,
+                                ),
+                                SizedBox(height: 10),
+                                ElevatedButton(
+                                  onPressed: _updatePassword,
+                                  child: Text('Update Password'),
+                                ),
+                              ],
+                            ),
+                          ),
+                          crossFadeState: _isExpanded["Change Password"]!
+                              ? CrossFadeState.showSecond
+                              : CrossFadeState.showFirst,
+                          duration: Duration(milliseconds: 300),
+                        ),
+                      ],
+                    ),
+                  ),
+                  // Logout Section
+                  Card(
+                    margin: EdgeInsets.symmetric(vertical: 8),
+                    elevation: 2,
+                    child: Column(
+                      children: [
+                        ListTile(
+                          title: Text(
+                            'Logout',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                              color: Colors.black87,
+                            ),
+                          ),
+                          trailing: Icon(
+                            _isExpanded["Logout"]!
+                                ? Icons.keyboard_arrow_up
+                                : Icons.keyboard_arrow_down,
+                            color: Colors.black54,
+                          ),
+                          onTap: () {
+                            setState(() {
+                              _isExpanded["Logout"] = !_isExpanded["Logout"]!;
+                            });
+                          },
+                       ),
+AnimatedCrossFade(
+  firstChild: SizedBox.shrink(),
+  secondChild: Padding(
+    padding: const EdgeInsets.all(16.0),
+    child: Column(
+      children: [
+        Text(
+          "Click below to logout.",
+          style: TextStyle(
+            fontSize: 14,
+            color: Colors.grey[700],
+          ),
+          textAlign: TextAlign.center,
+        ),
+        SizedBox(height: 10),
+        ElevatedButton(
+          onPressed: () {
+            _logout();
+            Navigator.pushReplacementNamed(context, '/login');
+          },
+          child: Text(
+            'Logout',
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.white,
+            ),
+          ),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.red,
+          ),
+        ),
+      ],
+    ),
+  ),
+  crossFadeState: _isExpanded["Logout"]!
+      ? CrossFadeState.showSecond
+      : CrossFadeState.showFirst,
+  duration: Duration(milliseconds: 300),
+),
+                        
                       ],
                     ),
                   ),
