@@ -12,8 +12,10 @@ class _RegisterPageState extends State<RegisterPage> {
 
   String _email = '';
   String _password = '';
-  String _confirmPassword = '';
   bool _isLoading = false;
+  bool _isObscuredPassword = true;
+  bool _isObscuredConfirmPassword = true;
+  String _confirmPassword = '';
 
   Future<void> _register() async {
     if (!_formKey.currentState!.validate()) return;
@@ -108,92 +110,75 @@ class _RegisterPageState extends State<RegisterPage> {
                                   .hasMatch(value)) {
                                 return 'Please enter a valid email';
                               }
+                            },
+                          ),
+                          SizedBox(height: 10),
+                          SizedBox(height: 10),
+                          TextFormField(
+                            decoration: InputDecoration(
+                              prefixIcon: Icon(Icons.lock),
+                              hintText: 'Password',
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10.0),
+                              ),
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  _isObscuredPassword
+                                      ? Icons.visibility
+                                      : Icons.visibility_off,
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    _isObscuredPassword = !_isObscuredPassword;
+                                  });
+                                },
+                              ),
+                            ),
+                            obscureText: _isObscuredPassword,
+                            onChanged: (value) => _password = value,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter a password';
+                              } else if (value.length < 8) {
+                                return 'Password must be at least 8 characters long';
+                              }
                               return null;
                             },
                           ),
                           SizedBox(height: 10),
-                          StatefulBuilder(
-                            builder:
-                                (BuildContext context, StateSetter setState) {
-                              bool _isObscured = true;
-                              return TextFormField(
-                                decoration: InputDecoration(
-                                  prefixIcon: Icon(Icons.lock),
-                                  hintText: 'Password',
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10.0),
-                                  ),
-                                  suffixIcon: IconButton(
-                                    icon: Icon(
-                                      _isObscured
-                                          ? Icons.visibility
-                                          : Icons.visibility_off,
-                                    ),
-                                    onPressed: () {
-                                      setState(() {
-                                        _isObscured = !_isObscured;
-                                      });
-                                    },
-                                  ),
+                          TextFormField(
+                            decoration: InputDecoration(
+                              prefixIcon: Icon(Icons.lock),
+                              hintText: 'Confirm Password',
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10.0),
+                              ),
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  _isObscuredConfirmPassword
+                                      ? Icons.visibility
+                                      : Icons.visibility_off,
                                 ),
-                                obscureText: _isObscured,
-                                onChanged: (value) => _password = value,
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Please enter a password';
-                                  } else if (value.length < 8) {
-                                    return 'Password must be at least 8 characters long';
-                                  }
-                                  return null;
+                                onPressed: () {
+                                  setState(() {
+                                    _isObscuredConfirmPassword =
+                                        !_isObscuredConfirmPassword;
+                                  });
                                 },
-                              );
+                              ),
+                            ),
+                            obscureText: _isObscuredConfirmPassword,
+                            onChanged: (value) => _confirmPassword = value,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please confirm your password';
+                              } else if (value != _password) {
+                                return 'Passwords do not match';
+                              }
+                              return null;
                             },
                           ),
                           SizedBox(height: 10),
-                          StatefulBuilder(
-                            builder:
-                                (BuildContext context, StateSetter setState) {
-                              bool _isObscured = true;
-                              return TextFormField(
-                                decoration: InputDecoration(
-                                  prefixIcon: Icon(Icons.lock),
-                                  hintText: 'Confirm Password',
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10.0),
-                                  ),
-                                  suffixIcon: IconButton(
-                                    icon: Icon(
-                                      _isObscured
-                                          ? Icons.visibility
-                                          : Icons.visibility_off,
-                                    ),
-                                    onPressed: () {
-                                      setState(() {
-                                        _isObscured = !_isObscured;
-                                      });
-                                    },
-                                  ),
-                                ),
-                                obscureText: _isObscured,
-                                onChanged: (value) => _confirmPassword = value,
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Please confirm your password';
-                                  } else if (value != _password) {
-                                    return 'Passwords do not match';
-                                  }
-                                  return null;
-                                },
-                              );
-                            },
-                          ),
-                          SizedBox(height: 10),
-                          _isLoading
-                              ? CircularProgressIndicator()
-                              : ElevatedButton(
-                                  onPressed: _register,
-                                  child: Text('Register'),
-                                ),
                           SizedBox(height: 10),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,

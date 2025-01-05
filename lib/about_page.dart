@@ -26,8 +26,30 @@ class _AboutPageState extends State<AboutPage> {
         "Ensure proper safety while operating the drone. Follow all legal and regulatory guidelines for usage.",
     "Terms and Conditions":
         "By using this app, you agree to the terms and conditions specified for the usage of drones and software.",
-    "Feedback": "We value your feedback! Please send us your thoughts and suggestions to improve the app.",
+    "Feedback":
+        "We value your feedback! Please send us your thoughts and suggestions to improve the app.",
   };
+
+  final TextEditingController _feedbackController = TextEditingController();
+
+  void _submitFeedback() async {
+    String feedback = _feedbackController.text;
+    if (feedback.isNotEmpty) {
+      // Assuming you have set up Firebase Firestore and Firebase Authentication
+      User? user = FirebaseAuth.instance.currentUser;
+      await FirebaseFirestore.instance.collection('feedback').add({
+        'feedback': feedback,
+        'user': user != null
+            ? user.email
+            : 'Anonymous', // Use user's email if available
+        'timestamp': FieldValue.serverTimestamp(),
+      });
+      _feedbackController.clear();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Feedback submitted successfully!')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +72,9 @@ class _AboutPageState extends State<AboutPage> {
                     height: 100,
                     width: 100,
                   ),
-                  SizedBox(height: 10), // Add some space between the image and the text
+                  SizedBox(
+                      height:
+                          10), // Add some space between the image and the text
                   Text(
                     'DASS',
                     style: TextStyle(

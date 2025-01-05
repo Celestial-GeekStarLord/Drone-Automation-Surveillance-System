@@ -13,6 +13,7 @@ class _LoginPageState extends State<LoginPage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   bool rememberMe = false;
   bool isLoading = false;
+  bool _isObscure = true;
 
   Future<void> _login() async {
     setState(() {
