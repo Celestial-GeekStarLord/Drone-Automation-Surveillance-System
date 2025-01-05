@@ -301,14 +301,14 @@ class _AccountPageState extends State<AccountPage> {
         type: BottomNavigationBarType.fixed,
         selectedItemColor: Colors.blue,
         unselectedItemColor: Colors.grey,
-        currentIndex: 2, // Change this index according to the active page
+        currentIndex: 3, // Change this index according to the active page
         onTap: (index) {
           if (index == 0) {
             Navigator.pushNamed(context, '/home');
           } else if (index == 1) {
             Navigator.pushNamed(context, '/sensors');
-          } else if (index == 3) {
-            Navigator.pushNamed(context, '/account');
+          } else if (index == 2) {
+            Navigator.pushNamed(context, '/about');
           }
         },
         items: [

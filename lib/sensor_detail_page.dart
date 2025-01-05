@@ -111,3 +111,7 @@ class _SensorDetailPageState extends State<SensorDetailPage> {
     );
   }
 }
+
+extension on FirebaseDatabase {
+  reference() {}
+}
