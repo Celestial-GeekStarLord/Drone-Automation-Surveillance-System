@@ -50,50 +50,49 @@ class _HomePageState extends State<HomePage> {
               fit: BoxFit.cover,
             ),
           ),
-
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
-  currentIndex: _currentIndex,
-  onTap: (index) {
-    setState(() {
-      _currentIndex = index;
-    });
-    switch (index) {
-      case 0:
-        Navigator.pushNamed(context, '/home');
-        break;
-      case 1:
-        Navigator.pushNamed(context, '/sensors');
-        break;
-      case 2:
-        Navigator.pushNamed(context, '/about');
-        break;
-      case 3:
-        Navigator.pushNamed(context, '/account');
-        break;
-    }
-  },
-  type: BottomNavigationBarType.fixed,
-  items: [
-    BottomNavigationBarItem(
-      icon: Icon(Icons.home),
-      label: 'Home',
-    ),
-    BottomNavigationBarItem(
-      icon: Icon(Icons.sensors),
-      label: 'Sensors',
-    ),
-    BottomNavigationBarItem(
-      icon: Icon(Icons.info),
-      label: 'About',
-    ),
-    BottomNavigationBarItem(
-      icon: Icon(Icons.account_circle),
-      label: 'Account',
-    ),
-  ],
-),
+        currentIndex: _currentIndex,
+        onTap: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+          switch (index) {
+            case 0:
+              Navigator.pushNamed(context, '/home');
+              break;
+            case 1:
+              Navigator.pushNamed(context, '/sensors');
+              break;
+            case 2:
+              Navigator.pushNamed(context, '/about');
+              break;
+            case 3:
+              Navigator.pushNamed(context, '/account');
+              break;
+          }
+        },
+        type: BottomNavigationBarType.fixed,
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.sensors),
+            label: 'Sensors',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.info),
+            label: 'About',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Account',
+          ),
+        ],
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: connectDrone, // Simulate drone connection
         child: Icon(Icons.link),
@@ -121,8 +120,8 @@ class _HomePageState extends State<HomePage> {
               Divider(),
               if (isDroneConnected && notifications.isNotEmpty)
                 ...notifications.map((notification) => ListTile(
-                  title: Text(notification),
-                ))
+                      title: Text(notification),
+                    ))
               else
                 Center(
                   child: Text(
@@ -148,26 +147,26 @@ class DroneDetectionPage extends StatelessWidget {
     return Center(
       child: isDroneConnected
           ? Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Image.asset(
-            'assets/image/drone_image.png',
-            height: 200,
-            width: 200,
-            fit: BoxFit.contain,
-          ),
-          SizedBox(height: 20),
-          Text(
-            'Live Data from Drone',
-            style: TextStyle(fontSize: 20, color: Colors.white),
-          ),
-        ],
-      )
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset(
+                  'assets/image/drone_image.png',
+                  height: 200,
+                  width: 200,
+                  fit: BoxFit.contain,
+                ),
+                SizedBox(height: 20),
+                Text(
+                  'Live Data from Drone',
+                  style: TextStyle(fontSize: 20, color: Colors.white),
+                ),
+              ],
+            )
           : Text(
-        'Drone is not connected.\nPlease connect to view data.',
-        textAlign: TextAlign.center,
-        style: TextStyle(fontSize: 20, color: Colors.white),
-      ),
+              'Drone is not connected.\nPlease connect to view data.',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 20, color: Colors.white),
+            ),
     );
   }
 }

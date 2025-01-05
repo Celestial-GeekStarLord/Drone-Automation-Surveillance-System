@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart'; // Import FirebaseAuth
 import 'register_page.dart'; // Import RegisterPage
@@ -49,6 +48,8 @@ class _LoginPageState extends State<LoginPage> {
         errorMessage = 'No user found for that email.';
       } else if (e.code == 'wrong-password') {
         errorMessage = 'Wrong password provided.';
+      } else if (e.code == 'network-request-failed') {
+        errorMessage = 'No internet connection. Please try again.';
       } else {
         errorMessage = 'Something went wrong. Please try again.';
       }
@@ -100,12 +101,22 @@ class _LoginPageState extends State<LoginPage> {
                 padding: const EdgeInsets.symmetric(horizontal: 24.0),
                 child: TextField(
                   controller: passwordController,
-                  obscureText: true,
+                  obscureText: _isObscure,
                   decoration: InputDecoration(
                     prefixIcon: Icon(Icons.lock),
                     hintText: 'Password',
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _isObscure ? Icons.visibility : Icons.visibility_off,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _isObscure = !_isObscure;
+                        });
+                      },
                     ),
                   ),
                 ),

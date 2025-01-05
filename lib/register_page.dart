@@ -25,7 +25,7 @@ class _RegisterPageState extends State<RegisterPage> {
     try {
       // Create a new user
       UserCredential userCredential =
-      await _auth.createUserWithEmailAndPassword(
+          await _auth.createUserWithEmailAndPassword(
         email: _email,
         password: _password,
       );
@@ -40,7 +40,8 @@ class _RegisterPageState extends State<RegisterPage> {
         );
       }
 
-      Navigator.of(context).pop(); // Navigate back after successful registration
+      Navigator.of(context)
+          .pop(); // Navigate back after successful registration
     } on FirebaseAuthException catch (e) {
       String errorMessage = 'An error occurred. Please try again.';
       if (e.code == 'email-already-in-use') {
@@ -49,6 +50,9 @@ class _RegisterPageState extends State<RegisterPage> {
         errorMessage = 'The password is too weak.';
       } else if (e.code == 'invalid-email') {
         errorMessage = 'The email address is invalid.';
+      } else if (e.code == 'network-request-failed') {
+        errorMessage =
+            'No internet connection. Please check your connection and try again.';
       }
 
       ScaffoldMessenger.of(context)
@@ -67,7 +71,6 @@ class _RegisterPageState extends State<RegisterPage> {
         child: SingleChildScrollView(
           child: Stack(
             children: [
-
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -109,59 +112,96 @@ class _RegisterPageState extends State<RegisterPage> {
                             },
                           ),
                           SizedBox(height: 10),
-                          TextFormField(
-                            decoration: InputDecoration(
-                              prefixIcon: Icon(Icons.lock),
-                              hintText: 'Password',
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10.0),
-                              ),
-                            ),
-                            obscureText: true,
-                            onChanged: (value) => _password = value,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter a password';
-                              } else if (value.length < 8) {
-                                return 'Password must be at least 8 characters long';
-                              }
-                              return null;
+                          StatefulBuilder(
+                            builder:
+                                (BuildContext context, StateSetter setState) {
+                              bool _isObscured = true;
+                              return TextFormField(
+                                decoration: InputDecoration(
+                                  prefixIcon: Icon(Icons.lock),
+                                  hintText: 'Password',
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                  ),
+                                  suffixIcon: IconButton(
+                                    icon: Icon(
+                                      _isObscured
+                                          ? Icons.visibility
+                                          : Icons.visibility_off,
+                                    ),
+                                    onPressed: () {
+                                      setState(() {
+                                        _isObscured = !_isObscured;
+                                      });
+                                    },
+                                  ),
+                                ),
+                                obscureText: _isObscured,
+                                onChanged: (value) => _password = value,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please enter a password';
+                                  } else if (value.length < 8) {
+                                    return 'Password must be at least 8 characters long';
+                                  }
+                                  return null;
+                                },
+                              );
                             },
                           ),
                           SizedBox(height: 10),
-                          TextFormField(
-                            decoration: InputDecoration(
-                              prefixIcon: Icon(Icons.lock),
-                              hintText: 'Confirm Password',
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10.0),
-                              ),
-                            ),
-                            obscureText: true,
-                            onChanged: (value) => _confirmPassword = value,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please confirm your password';
-                              } else if (value != _password) {
-                                return 'Passwords do not match';
-                              }
-                              return null;
+                          StatefulBuilder(
+                            builder:
+                                (BuildContext context, StateSetter setState) {
+                              bool _isObscured = true;
+                              return TextFormField(
+                                decoration: InputDecoration(
+                                  prefixIcon: Icon(Icons.lock),
+                                  hintText: 'Confirm Password',
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                  ),
+                                  suffixIcon: IconButton(
+                                    icon: Icon(
+                                      _isObscured
+                                          ? Icons.visibility
+                                          : Icons.visibility_off,
+                                    ),
+                                    onPressed: () {
+                                      setState(() {
+                                        _isObscured = !_isObscured;
+                                      });
+                                    },
+                                  ),
+                                ),
+                                obscureText: _isObscured,
+                                onChanged: (value) => _confirmPassword = value,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please confirm your password';
+                                  } else if (value != _password) {
+                                    return 'Passwords do not match';
+                                  }
+                                  return null;
+                                },
+                              );
                             },
                           ),
                           SizedBox(height: 10),
                           _isLoading
                               ? CircularProgressIndicator()
                               : ElevatedButton(
-                            onPressed: _register,
-                            child: Text('Register'),
-                          ),
+                                  onPressed: _register,
+                                  child: Text('Register'),
+                                ),
                           SizedBox(height: 10),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
                                 "Already have an account?",
-                                style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                                style: TextStyle(
+                                    fontSize: 12, fontWeight: FontWeight.bold),
                               ),
                               TextButton(
                                 onPressed: () {
