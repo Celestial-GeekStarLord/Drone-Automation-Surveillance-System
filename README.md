@@ -1,5 +1,5 @@
 # DASS
- DRONE PROJECT 
+ DRONE AUTOMATION SERVELENCE SYSTEM 
 -it includes ai/ml for human detection .
 -object avoidance.
 -real time data's transmission.
