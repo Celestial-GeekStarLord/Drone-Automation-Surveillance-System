@@ -1,18 +1,30 @@
 import 'package:flutter/material.dart';
 
-class SensorsPage extends StatelessWidget {
+class SensorsPage extends StatefulWidget {
+  @override
+  _SensorsPageState createState() => _SensorsPageState();
+}
+
+class _SensorsPageState extends State<SensorsPage> {
+  // Sensor data (can be dynamically fetched or replaced with Firebase data)
+  List<Map<String, dynamic>> sensors = [
+    {'name': 'GPS', 'status': 'Inactive'},
+    {'name': 'Gas', 'status': 'Inactive'},
+    {'name': 'Temperature', 'status': 'Inactive'},
+    {'name': 'Ultrasonic', 'status': 'Inactive'},
+    {'name': 'PIR', 'status': 'Inactive'},
+  ];
+
+  // Toggle sensor status
+  void toggleSensorStatus(int index) {
+    setState(() {
+      sensors[index]['status'] =
+          sensors[index]['status'] == 'Inactive' ? 'Active' : 'Inactive';
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    // Sensor data (can be dynamically fetched)
-    final List<Map<String, dynamic>> sensors = [
-      {'name': 'GPS', 'status': 'Inactive'},
-      {'name': 'Gas', 'status': 'Inactive'},
-      {'name': 'Temperature', 'status': 'Inactive'},
-      {'name': 'Ultrasonic', 'status': 'Inactive'},
-      {'name': 'PIR', 'status': 'Inactive'},
-    ];
-
-    // Separate active and inactive sensors
     final activeSensors =
         sensors.where((sensor) => sensor['status'] == 'Active').toList();
     final inactiveSensors =
@@ -61,7 +73,12 @@ class SensorsPage extends StatelessWidget {
             ),
           ),
           ...activeSensors.map((sensor) {
-            return SensorTile(name: sensor['name'], status: true);
+            int index = sensors.indexOf(sensor);
+            return SensorTile(
+              name: sensor['name'],
+              status: true,
+              onToggleStatus: () => toggleSensorStatus(index),
+            );
           }).toList(),
 
           // Inactive Sensors Section
@@ -77,7 +94,12 @@ class SensorsPage extends StatelessWidget {
             ),
           ),
           ...inactiveSensors.map((sensor) {
-            return SensorTile(name: sensor['name'], status: false);
+            int index = sensors.indexOf(sensor);
+            return SensorTile(
+              name: sensor['name'],
+              status: false,
+              onToggleStatus: () => toggleSensorStatus(index),
+            );
           }).toList(),
         ],
       ),
@@ -130,8 +152,13 @@ class SensorsPage extends StatelessWidget {
 class SensorTile extends StatelessWidget {
   final String name;
   final bool status; // true = active, false = inactive
+  final VoidCallback onToggleStatus;
 
-  const SensorTile({required this.name, required this.status});
+  const SensorTile({
+    required this.name,
+    required this.status,
+    required this.onToggleStatus,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -152,39 +179,7 @@ class SensorTile extends StatelessWidget {
             color: status ? Colors.green : Colors.red,
             size: 16,
           ),
-          onTap: () {
-            // Navigate to sensor details
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => SensorDetailsPage(sensorName: name),
-              ),
-            );
-          },
-        ),
-      ),
-    );
-  }
-}
-
-// Sensor Details Page
-class SensorDetailsPage extends StatelessWidget {
-  final String sensorName;
-
-  const SensorDetailsPage({required this.sensorName});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(sensorName),
-        backgroundColor: Color(0xFFAADAE9),
-        elevation: 0,
-      ),
-      body: Center(
-        child: Text(
-          'Details for $sensorName sensor will be displayed here.',
-          style: TextStyle(fontSize: 18),
+          onTap: onToggleStatus, // Call toggle function on tap
         ),
       ),
     );

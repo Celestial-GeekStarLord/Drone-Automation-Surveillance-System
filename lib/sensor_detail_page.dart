@@ -16,18 +16,31 @@ class SensorDetailPage extends StatefulWidget {
 class _SensorDetailPageState extends State<SensorDetailPage> {
   late DatabaseReference _sensorRef;
   Map<String, String> sensorData = {};
+  bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
     _sensorRef = FirebaseDatabase.instance
         .reference()
-        .child('sensors/${widget.sensorName}');
+        .child('sensors')
+        .child('sensor1${widget.sensorName}');
+
+    // Listen for real-time updates
     _sensorRef.onValue.listen((event) {
-      final data = Map<String, String>.from(event.snapshot.value as Map);
-      setState(() {
-        sensorData = data;
-      });
+      if (event.snapshot.value != null && event.snapshot.value is Map) {
+        final data = Map<String, String>.from(event.snapshot.value as Map);
+        setState(() {
+          sensorData = data;
+          isLoading = false;
+        });
+      } else {
+        // Handle missing or incorrect data format
+        setState(() {
+          sensorData = {'Error': 'Invalid or missing data'};
+          isLoading = false;
+        });
+      }
     });
   }
 
@@ -63,6 +76,8 @@ class _SensorDetailPageState extends State<SensorDetailPage> {
               ],
             ),
           ),
+
+          // Sensor Data Display
           Expanded(
             child: Container(
               color: Color(0xFFD1EEF7),
@@ -74,34 +89,45 @@ class _SensorDetailPageState extends State<SensorDetailPage> {
                 ),
                 child: Padding(
                   padding: EdgeInsets.all(16),
-                  child: sensorData.isEmpty
+                  child: isLoading
                       ? Center(child: CircularProgressIndicator())
-                      : Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: sensorData.entries.map((entry) {
-                            return Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(vertical: 8.0),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    entry.key,
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  Text(
-                                    entry.value,
-                                    style: TextStyle(fontSize: 16),
-                                  ),
-                                ],
+                      : sensorData.isEmpty || sensorData.containsKey('Error')
+                          ? Center(
+                              child: Text(
+                                sensorData['Error'] ??
+                                    'No data available for this sensor.',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.grey,
+                                ),
                               ),
-                            );
-                          }).toList(),
-                        ),
+                            )
+                          : Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: sensorData.entries.map((entry) {
+                                return Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 8.0),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        entry.key,
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      Text(
+                                        entry.value,
+                                        style: TextStyle(fontSize: 16),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              }).toList(),
+                            ),
                 ),
               ),
             ),
@@ -109,6 +135,12 @@ class _SensorDetailPageState extends State<SensorDetailPage> {
         ],
       ),
     );
+  }
+}
+
+extension on FirebaseDatabase {
+  DatabaseReference reference() {
+    return FirebaseDatabase.instance.reference();
   }
 }
 

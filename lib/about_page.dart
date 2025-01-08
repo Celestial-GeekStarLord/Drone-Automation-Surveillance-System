@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AboutPage extends StatefulWidget {
   @override
@@ -83,6 +85,27 @@ class _AboutPageState extends State<AboutPage> {
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
                     ),
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  TextField(
+                    controller: _feedbackController,
+                    decoration: InputDecoration(
+                      labelText: 'Your Feedback',
+                      border: OutlineInputBorder(),
+                    ),
+                    maxLines: 3,
+                  ),
+                  SizedBox(height: 10),
+                  ElevatedButton(
+                    onPressed: _submitFeedback,
+                    child: Text('Submit Feedback'),
                   ),
                 ],
               ),
