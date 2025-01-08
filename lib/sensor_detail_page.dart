@@ -144,6 +144,4 @@ extension on FirebaseDatabase {
   }
 }
 
-extension on FirebaseDatabase {
-  reference() {}
-}
+// Removed redundant extension
