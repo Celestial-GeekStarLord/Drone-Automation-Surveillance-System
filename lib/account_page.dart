@@ -34,7 +34,7 @@ class _AccountPageState extends State<AccountPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
             content:
-            Text('Verification email sent to ${_emailController.text}')),
+                Text('Verification email sent to ${_emailController.text}')),
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -132,8 +132,7 @@ class _AccountPageState extends State<AccountPage> {
                           ),
                           onTap: () {
                             setState(() {
-                              _isExpanded["Profile"] =
-                              !_isExpanded["Profile"]!;
+                              _isExpanded["Profile"] = !_isExpanded["Profile"]!;
                             });
                           },
                         ),
@@ -146,7 +145,7 @@ class _AccountPageState extends State<AccountPage> {
                                 TextField(
                                   controller: _emailController,
                                   decoration:
-                                  InputDecoration(labelText: 'Email'),
+                                      InputDecoration(labelText: 'Email'),
                                 ),
                                 SizedBox(height: 10),
                                 ElevatedButton(
@@ -188,7 +187,7 @@ class _AccountPageState extends State<AccountPage> {
                           onTap: () {
                             setState(() {
                               _isExpanded["Change Password"] =
-                              !_isExpanded["Change Password"]!;
+                                  !_isExpanded["Change Password"]!;
                             });
                           },
                         ),
@@ -246,47 +245,47 @@ class _AccountPageState extends State<AccountPage> {
                               _isExpanded["Logout"] = !_isExpanded["Logout"]!;
                             });
                           },
-                       ),
-AnimatedCrossFade(
-  firstChild: SizedBox.shrink(),
-  secondChild: Padding(
-    padding: const EdgeInsets.all(16.0),
-    child: Column(
-      children: [
-        Text(
-          "Click below to logout.",
-          style: TextStyle(
-            fontSize: 14,
-            color: Colors.grey[700],
-          ),
-          textAlign: TextAlign.center,
-        ),
-        SizedBox(height: 10),
-        ElevatedButton(
-          onPressed: () {
-            _logout();
-            Navigator.pushReplacementNamed(context, '/login');
-          },
-          child: Text(
-            'Logout',
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.white,
-            ),
-          ),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.red,
-          ),
-        ),
-      ],
-    ),
-  ),
-  crossFadeState: _isExpanded["Logout"]!
-      ? CrossFadeState.showSecond
-      : CrossFadeState.showFirst,
-  duration: Duration(milliseconds: 300),
-),
-                        
+                        ),
+                        AnimatedCrossFade(
+                          firstChild: SizedBox.shrink(),
+                          secondChild: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              children: [
+                                Text(
+                                  "Click below to logout.",
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.grey[700],
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                                SizedBox(height: 10),
+                                ElevatedButton(
+                                  onPressed: () {
+                                    _logout();
+                                    Navigator.pushReplacementNamed(
+                                        context, '/login');
+                                  },
+                                  child: Text(
+                                    'Logout',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.red,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          crossFadeState: _isExpanded["Logout"]!
+                              ? CrossFadeState.showSecond
+                              : CrossFadeState.showFirst,
+                          duration: Duration(milliseconds: 300),
+                        ),
                       ],
                     ),
                   ),
@@ -302,7 +301,7 @@ AnimatedCrossFade(
         type: BottomNavigationBarType.fixed,
         selectedItemColor: Colors.blue,
         unselectedItemColor: Colors.grey,
-        currentIndex: 3, // Active page index for "Account"
+        currentIndex: 3, // Change this index according to the active page
         onTap: (index) {
           if (index == 0) {
             Navigator.pushNamed(context, '/home');

@@ -11,6 +11,7 @@ dependencies:
    # Core Firebase package
   firebase_auth: ^5.3.4
   firebase_database: ^11.2.0 # Realtime Database
+  cloud_firestore: ^5.6.0
   #firebase_storage: ^11.1.0  # (Optional) Firebase Storage for images
   flutter:
     sdk: flutter
@@ -23,6 +24,7 @@ dev_dependencies:
   flutter_launcher_icons: ^0.13.1
   flutter_test:
     sdk: flutter
+
 flutter_icons:
   android: true
   ios: true

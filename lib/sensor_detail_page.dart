@@ -1,20 +1,41 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_database/firebase_database.dart';
 
-class SensorDetailPage extends StatelessWidget {
+class SensorDetailPage extends StatefulWidget {
   final String sensorName;
-  final Map<String, String> sensorData;
 
   const SensorDetailPage({
     Key? key,
     required this.sensorName,
-    required this.sensorData,
   }) : super(key: key);
+
+  @override
+  _SensorDetailPageState createState() => _SensorDetailPageState();
+}
+
+class _SensorDetailPageState extends State<SensorDetailPage> {
+  late DatabaseReference _sensorRef;
+  Map<String, String> sensorData = {};
+
+  @override
+  void initState() {
+    super.initState();
+    _sensorRef = FirebaseDatabase.instance
+        .reference()
+        .child('sensors/${widget.sensorName}');
+    _sensorRef.onValue.listen((event) {
+      final data = Map<String, String>.from(event.snapshot.value as Map);
+      setState(() {
+        sensorData = data;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(sensorName),
+        title: Text(widget.sensorName),
         backgroundColor: Color(0xFFAADAE9),
       ),
       body: Column(
@@ -32,7 +53,7 @@ class SensorDetailPage extends StatelessWidget {
                 ),
                 SizedBox(width: 10),
                 Text(
-                  sensorName.toUpperCase(),
+                  widget.sensorName.toUpperCase(),
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
@@ -53,30 +74,34 @@ class SensorDetailPage extends StatelessWidget {
                 ),
                 child: Padding(
                   padding: EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: sensorData.entries.map((entry) {
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              entry.key,
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
+                  child: sensorData.isEmpty
+                      ? Center(child: CircularProgressIndicator())
+                      : Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: sensorData.entries.map((entry) {
+                            return Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 8.0),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    entry.key,
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  Text(
+                                    entry.value,
+                                    style: TextStyle(fontSize: 16),
+                                  ),
+                                ],
                               ),
-                            ),
-                            Text(
-                              entry.value,
-                              style: TextStyle(fontSize: 16),
-                            ),
-                          ],
+                            );
+                          }).toList(),
                         ),
-                      );
-                    }).toList(),
-                  ),
                 ),
               ),
             ),
@@ -85,4 +110,8 @@ class SensorDetailPage extends StatelessWidget {
       ),
     );
   }
+}
+
+extension on FirebaseDatabase {
+  reference() {}
 }

@@ -14,9 +14,9 @@ class SensorsPage extends StatelessWidget {
 
     // Separate active and inactive sensors
     final activeSensors =
-    sensors.where((sensor) => sensor['status'] == 'Active').toList();
+        sensors.where((sensor) => sensor['status'] == 'Active').toList();
     final inactiveSensors =
-    sensors.where((sensor) => sensor['status'] == 'Inactive').toList();
+        sensors.where((sensor) => sensor['status'] == 'Inactive').toList();
 
     return Scaffold(
       backgroundColor: Color(0xFFAADAE9),
@@ -66,7 +66,8 @@ class SensorsPage extends StatelessWidget {
 
           // Inactive Sensors Section
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
             child: const Text(
               'Inactive',
               style: TextStyle(
@@ -85,7 +86,7 @@ class SensorsPage extends StatelessWidget {
         type: BottomNavigationBarType.fixed,
         selectedItemColor: Colors.blue,
         unselectedItemColor: Colors.grey,
-        items: const [
+        items: [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: 'Home',
@@ -99,7 +100,7 @@ class SensorsPage extends StatelessWidget {
             label: 'About',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.account_circle),
+            icon: Icon(Icons.person),
             label: 'Account',
           ),
         ],
@@ -110,7 +111,7 @@ class SensorsPage extends StatelessWidget {
               Navigator.pushNamed(context, '/home');
               break;
             case 1:
-            // Stay on the current page
+              // Stay on the current page
               break;
             case 2:
               Navigator.pushNamed(context, '/about');
