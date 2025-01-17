@@ -227,6 +227,75 @@ class _AccountPageState extends State<AccountPage> {
                       children: [
                         ListTile(
                           title: Text(
+                            'Delete Account ',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                              color: Colors.black87,
+                            ),
+                          ),
+                          trailing: Icon(
+                            _isExpanded["Logout"]!
+                                ? Icons.keyboard_arrow_up
+                                : Icons.keyboard_arrow_down,
+                            color: Colors.black54,
+                          ),
+                          onTap: () {
+                            setState(() {
+                              _isExpanded["Logout"] = !_isExpanded["Logout"]!;
+                            });
+                          },
+                        ),
+                        AnimatedCrossFade(
+                          firstChild: SizedBox.shrink(),
+                          secondChild: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              children: [
+                                Text(
+                                  "Click below to delete account.",
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.grey[700],
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                                SizedBox(height: 10),
+                                ElevatedButton(
+                                  onPressed: () {
+                                    _logout();
+                                    Navigator.pushReplacementNamed(
+                                        context, '/login');
+                                  },
+                                  child: Text(
+                                    'Delete',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.red,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          crossFadeState: _isExpanded["Logout"]!
+                              ? CrossFadeState.showSecond
+                              : CrossFadeState.showFirst,
+                          duration: Duration(milliseconds: 300),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Card(
+                    margin: EdgeInsets.symmetric(vertical: 8),
+                    elevation: 2,
+                    child: Column(
+                      children: [
+                        ListTile(
+                          title: Text(
                             'Logout',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
