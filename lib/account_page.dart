@@ -42,6 +42,20 @@ class _AccountPageState extends State<AccountPage> {
       );
     }
   }
+  Future<void> deleteUser() async {
+  try {
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      await user.delete();
+      print('User account deleted successfully.');
+    } else {
+      print('No user is currently signed in.');
+    }
+  } catch (e) {
+    print('Error deleting user: $e');
+  }
+}
 
   Future<void> _updatePassword() async {
     try {
@@ -235,14 +249,14 @@ class _AccountPageState extends State<AccountPage> {
                             ),
                           ),
                           trailing: Icon(
-                            _isExpanded["Logout"]!
+                            _isExpanded["Delete Account"]!
                                 ? Icons.keyboard_arrow_up
                                 : Icons.keyboard_arrow_down,
                             color: Colors.black54,
                           ),
                           onTap: () {
                             setState(() {
-                              _isExpanded["Logout"] = !_isExpanded["Logout"]!;
+                              _isExpanded["Delete Account"] = !_isExpanded["Delete Account"]!;
                             });
                           },
                         ),
@@ -263,7 +277,7 @@ class _AccountPageState extends State<AccountPage> {
                                 SizedBox(height: 10),
                                 ElevatedButton(
                                   onPressed: () {
-                                    _logout();
+                                    deleteUser();
                                     Navigator.pushReplacementNamed(
                                         context, '/login');
                                   },
