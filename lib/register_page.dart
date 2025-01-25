@@ -110,6 +110,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                   .hasMatch(value)) {
                                 return 'Please enter a valid email';
                               }
+                              return null;
                             },
                           ),
                           SizedBox(height: 10),

@@ -87,6 +87,27 @@ class _AboutPageState extends State<AboutPage> {
                 ],
               ),
             ),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  TextField(
+                    controller: _feedbackController,
+                    decoration: InputDecoration(
+                      labelText: 'Your Feedback',
+                      border: OutlineInputBorder(),
+                    ),
+                    maxLines: 3,
+                  ),
+                  SizedBox(height: 10),
+                  ElevatedButton(
+                    onPressed: _submitFeedback,
+                    child: Text('Submit Feedback'),
+                  ),
+                ],
+              ),
+            ),
             SizedBox(height: 20), // Space below the logo
             Expanded(
               child: ListView.builder(

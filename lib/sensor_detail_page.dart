@@ -1,34 +1,61 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 class SensorDetailPage extends StatefulWidget {
   final String sensorName;
 
-  const SensorDetailPage({
-    Key? key,
-    required this.sensorName,
-  }) : super(key: key);
+  const SensorDetailPage({Key? key, required this.sensorName})
+      : super(key: key);
 
   @override
   _SensorDetailPageState createState() => _SensorDetailPageState();
 }
 
 class _SensorDetailPageState extends State<SensorDetailPage> {
-  late DatabaseReference _sensorRef;
-  Map<String, String> sensorData = {};
+  late DatabaseReference _databaseReference;
+  Map<String, dynamic>? sensorData;
+  bool isLoading = true;
+  String errorMessage = '';
 
   @override
   void initState() {
     super.initState();
-    _sensorRef = FirebaseDatabase.instance
-        .reference()
-        .child('sensors/${widget.sensorName}');
-    _sensorRef.onValue.listen((event) {
-      final data = Map<String, String>.from(event.snapshot.value as Map);
+    _databaseReference = FirebaseDatabase.instance
+        .ref()
+        .child('sensors')
+        .child(widget.sensorName.toLowerCase());
+
+    // Start listening to database changes
+    _databaseReference.onValue.listen((event) {
+      if (event.snapshot.exists) {
+        setState(() {
+          sensorData = Map<String, dynamic>.from(event.snapshot.value as Map);
+          isLoading = false;
+          errorMessage = '';
+        });
+      } else {
+        setState(() {
+          sensorData = null;
+          isLoading = false;
+          errorMessage = 'No data available for this sensor.';
+        });
+      }
+    }, onError: (error) {
       setState(() {
-        sensorData = data;
+        isLoading = false;
+        errorMessage =
+            'Failed to load data. Please check your network connection.';
       });
+      debugPrint("Error: $error");
     });
+  }
+
+  @override
+  void dispose() {
+    // Cancel any active listeners when the widget is disposed
+    _databaseReference.onDisconnect();
+    super.dispose();
   }
 
   @override
@@ -38,80 +65,72 @@ class _SensorDetailPageState extends State<SensorDetailPage> {
         title: Text(widget.sensorName),
         backgroundColor: Color(0xFFAADAE9),
       ),
-      body: Column(
-        children: [
-          // Header
-          Container(
-            padding: EdgeInsets.symmetric(vertical: 20),
-            color: Color(0xFFAADAE9),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Image.asset(
-                  'assets/image/logo.png',
-                  height: 40,
-                ),
-                SizedBox(width: 10),
-                Text(
-                  widget.sensorName.toUpperCase(),
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Expanded(
-            child: Container(
-              color: Color(0xFFD1EEF7),
-              padding: EdgeInsets.all(16),
-              child: Card(
-                elevation: 5,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                child: Padding(
-                  padding: EdgeInsets.all(16),
-                  child: sensorData.isEmpty
-                      ? Center(child: CircularProgressIndicator())
-                      : Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: sensorData.entries.map((entry) {
-                            return Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(vertical: 8.0),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    entry.key,
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  Text(
-                                    entry.value,
-                                    style: TextStyle(fontSize: 16),
-                                  ),
-                                ],
+      body: isLoading
+          ? Center(child: CircularProgressIndicator())
+          : errorMessage.isNotEmpty
+              ? Center(
+                  child: Text(errorMessage,
+                      style: TextStyle(color: Colors.red, fontSize: 16)))
+              : sensorData == null
+                  ? Center(child: Text('No data available.'))
+                  : Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Card(
+                        elevation: 4,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10)),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "Sensor Details",
+                                style: TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.bold),
                               ),
-                            );
-                          }).toList(),
+                              Divider(thickness: 1.5),
+                              ...sensorData!.entries.map((entry) {
+                                return Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 8.0),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        entry.key.capitalize(),
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 16),
+                                      ),
+                                      Text(
+                                        entry.value.toString(),
+                                        style: TextStyle(fontSize: 16),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              }).toList(),
+                              SizedBox(height: 16),
+                              Text(
+                                "Last Updated: ${DateTime.fromMillisecondsSinceEpoch(sensorData!['lastUpdated'])}",
+                                style: TextStyle(
+                                    fontSize: 14,
+                                    fontStyle: FontStyle.italic,
+                                    color: Colors.grey),
+                              ),
+                            ],
+                          ),
                         ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
+                      ),
+                    ),
     );
   }
 }
 
-extension on FirebaseDatabase {
-  reference() {}
+extension StringExtension on String {
+  String capitalize() {
+    return "${this[0].toUpperCase()}${substring(1).toLowerCase()}";
+  }
 }

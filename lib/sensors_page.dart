@@ -1,91 +1,96 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_database/firebase_database.dart';
+import './sensor_detail_page.dart';
 
-class SensorsPage extends StatelessWidget {
+class SensorsPage extends StatefulWidget {
+  @override
+  _SensorsPageState createState() => _SensorsPageState();
+}
+
+class _SensorsPageState extends State<SensorsPage> {
+  late DatabaseReference _databaseReference;
+  Map<String, String> sensorStatuses = {};
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _databaseReference = FirebaseDatabase.instance.ref().child('sensors');
+
+    // Listen for updates for each sensor
+    _databaseReference.onValue.listen((event) {
+      if (event.snapshot.value != null && event.snapshot.value is Map) {
+        final data = Map<String, dynamic>.from(event.snapshot.value as Map);
+
+        // Update sensor statuses based on the data changes
+        setState(() {
+          sensorStatuses = {
+            for (var key in data.keys)
+              key: data[key] != null && data[key]['isUpdating'] == true
+                  ? 'Active'
+                  : 'Inactive'
+          };
+          isLoading = false;
+        });
+      } else {
+        setState(() {
+          isLoading = false;
+        });
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    // Sensor data (can be dynamically fetched)
-    final List<Map<String, dynamic>> sensors = [
-      {'name': 'GPS', 'status': 'Inactive'},
-      {'name': 'Gas', 'status': 'Inactive'},
-      {'name': 'Temperature', 'status': 'Inactive'},
-      {'name': 'Ultrasonic', 'status': 'Inactive'},
-      {'name': 'PIR', 'status': 'Inactive'},
-    ];
-
-    // Separate active and inactive sensors
-    final activeSensors =
-        sensors.where((sensor) => sensor['status'] == 'Active').toList();
-    final inactiveSensors =
-        sensors.where((sensor) => sensor['status'] == 'Inactive').toList();
-
     return Scaffold(
-      backgroundColor: Color(0xFFAADAE9),
       appBar: AppBar(
-        title: const Text('Sensors'),
+        title: Text('Sensors'),
         backgroundColor: Color(0xFFAADAE9),
-        elevation: 0,
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Logo and Title
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Row(
-              children: [
-                Image.asset(
-                  'assets/image/logo.png',
-                  height: 50,
-                ),
-                const SizedBox(width: 16),
-                const Text(
-                  'Sensors',
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
+      body: isLoading
+          ? Center(child: CircularProgressIndicator())
+          : ListView.builder(
+              padding: const EdgeInsets.all(8.0),
+              itemCount: sensorStatuses.length,
+              itemBuilder: (context, index) {
+                final sensorName = sensorStatuses.keys.elementAt(index);
+                final sensorStatus = sensorStatuses[sensorName]!;
+                return ListTile(
+                  title: Text(sensorName),
+                  subtitle: Text(sensorStatus),
+                  trailing: Icon(
+                    sensorStatus == 'Active'
+                        ? Icons.check_circle
+                        : Icons.cancel,
+                    color: sensorStatus == 'Active' ? Colors.green : Colors.red,
                   ),
-                ),
-              ],
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => SensorDetailPage(
+                          sensorName: sensorName,
+                        ),
+                      ),
+                    );
+                  },
+                );
+              },
             ),
-          ),
-
-          // Active Sensors Section
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: const Text(
-              'Active',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-          ...activeSensors.map((sensor) {
-            return SensorTile(name: sensor['name'], status: true);
-          }).toList(),
-
-          // Inactive Sensors Section
-          Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-            child: const Text(
-              'Inactive',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-          ...inactiveSensors.map((sensor) {
-            return SensorTile(name: sensor['name'], status: false);
-          }).toList(),
-        ],
-      ),
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 1,
         type: BottomNavigationBarType.fixed,
         selectedItemColor: Colors.blue,
         unselectedItemColor: Colors.grey,
+        currentIndex: 1, // Change this index according to the active page
+        onTap: (index) {
+          if (index == 0) {
+            Navigator.pushNamed(context, '/home');
+          } else if (index == 2) {
+            Navigator.pushNamed(context, '/about');
+          } else if (index == 3) {
+            Navigator.pushNamed(context, '/account');
+          }
+        },
         items: [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
@@ -104,88 +109,6 @@ class SensorsPage extends StatelessWidget {
             label: 'Account',
           ),
         ],
-        onTap: (index) {
-          // Handle navigation based on the index
-          switch (index) {
-            case 0:
-              Navigator.pushNamed(context, '/home');
-              break;
-            case 1:
-              // Stay on the current page
-              break;
-            case 2:
-              Navigator.pushNamed(context, '/about');
-              break;
-            case 3:
-              Navigator.pushNamed(context, '/account');
-              break;
-          }
-        },
-      ),
-    );
-  }
-}
-
-// Sensor Tile Widget
-class SensorTile extends StatelessWidget {
-  final String name;
-  final bool status; // true = active, false = inactive
-
-  const SensorTile({required this.name, required this.status});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
-      child: Card(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
-        child: ListTile(
-          title: Text(
-            name,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          trailing: Icon(
-            Icons.circle,
-            color: status ? Colors.green : Colors.red,
-            size: 16,
-          ),
-          onTap: () {
-            // Navigate to sensor details
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => SensorDetailsPage(sensorName: name),
-              ),
-            );
-          },
-        ),
-      ),
-    );
-  }
-}
-
-// Sensor Details Page
-class SensorDetailsPage extends StatelessWidget {
-  final String sensorName;
-
-  const SensorDetailsPage({required this.sensorName});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(sensorName),
-        backgroundColor: Color(0xFFAADAE9),
-        elevation: 0,
-      ),
-      body: Center(
-        child: Text(
-          'Details for $sensorName sensor will be displayed here.',
-          style: TextStyle(fontSize: 18),
-        ),
       ),
     );
   }

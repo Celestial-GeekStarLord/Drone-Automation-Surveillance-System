@@ -16,6 +16,7 @@ class _AccountPageState extends State<AccountPage> {
     "Profile": false,
     "Change Password": false,
     "Logout": false,
+    "Delete Account":false,
   };
 
   @override
@@ -42,6 +43,20 @@ class _AccountPageState extends State<AccountPage> {
       );
     }
   }
+  Future<void> deleteUser() async {
+  try {
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      await user.delete();
+      print('User account deleted successfully.');
+    } else {
+      print('No user is currently signed in.');
+    }
+  } catch (e) {
+    print('Error deleting user: $e');
+  }
+}
 
   Future<void> _updatePassword() async {
     try {
@@ -220,6 +235,75 @@ class _AccountPageState extends State<AccountPage> {
                     ),
                   ),
                   // Logout Section
+                  Card(
+                    margin: EdgeInsets.symmetric(vertical: 8),
+                    elevation: 2,
+                    child: Column(
+                      children: [
+                        ListTile(
+                          title: Text(
+                            'Delete Account ',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                              color: Colors.black87,
+                            ),
+                          ),
+                          trailing: Icon(
+                            _isExpanded["Delete Account"]!
+                                ? Icons.keyboard_arrow_up
+                                : Icons.keyboard_arrow_down,
+                            color: Colors.black54,
+                          ),
+                          onTap: () {
+                            setState(() {
+                              _isExpanded["Delete Account"] = !_isExpanded["Delete Account"]!;
+                            });
+                          },
+                        ),
+                        AnimatedCrossFade(
+                          firstChild: SizedBox.shrink(),
+                          secondChild: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              children: [
+                                Text(
+                                  "Click below to delete account.",
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.grey[700],
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                                SizedBox(height: 10),
+                                ElevatedButton(
+                                  onPressed: () {
+                                    deleteUser();
+                                    Navigator.pushReplacementNamed(
+                                        context, '/login');
+                                  },
+                                  child: Text(
+                                    'Delete Account',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.red,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          crossFadeState: _isExpanded["Delete Account"]!
+                              ? CrossFadeState.showSecond
+                              : CrossFadeState.showFirst,
+                          duration: Duration(milliseconds: 300),
+                        ),
+                      ],
+                    ),
+                  ),
                   Card(
                     margin: EdgeInsets.symmetric(vertical: 8),
                     elevation: 2,
