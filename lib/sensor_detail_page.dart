@@ -62,7 +62,7 @@ class _SensorDetailPageState extends State<SensorDetailPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.sensorName.capitalize()),
+        title: Text(widget.sensorName),
         backgroundColor: Color(0xFFAADAE9),
       ),
       body: isLoading

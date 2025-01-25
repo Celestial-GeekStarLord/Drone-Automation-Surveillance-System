@@ -16,6 +16,7 @@ class _AccountPageState extends State<AccountPage> {
     "Profile": false,
     "Change Password": false,
     "Logout": false,
+    "Delete Account":false,
   };
 
   @override
@@ -282,7 +283,7 @@ class _AccountPageState extends State<AccountPage> {
                                         context, '/login');
                                   },
                                   child: Text(
-                                    'Delete',
+                                    'Delete Account',
                                     style: TextStyle(
                                       fontSize: 14,
                                       color: Colors.white,
@@ -295,7 +296,7 @@ class _AccountPageState extends State<AccountPage> {
                               ],
                             ),
                           ),
-                          crossFadeState: _isExpanded["Logout"]!
+                          crossFadeState: _isExpanded["Delete Account"]!
                               ? CrossFadeState.showSecond
                               : CrossFadeState.showFirst,
                           duration: Duration(milliseconds: 300),

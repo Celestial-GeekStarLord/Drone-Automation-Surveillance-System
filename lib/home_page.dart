@@ -120,8 +120,8 @@ class _HomePageState extends State<HomePage> {
               Divider(),
               if (isDroneConnected && notifications.isNotEmpty)
                 ...notifications.map((notification) => ListTile(
-                      title: Text(notification),
-                    ))
+                  title: Text(notification),
+                ))
               else
                 Center(
                   child: Text(
@@ -147,26 +147,26 @@ class DroneDetectionPage extends StatelessWidget {
     return Center(
       child: isDroneConnected
           ? Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Image.asset(
-                  'assets/image/drone_image.png',
-                  height: 200,
-                  width: 200,
-                  fit: BoxFit.contain,
-                ),
-                SizedBox(height: 20),
-                Text(
-                  'Live Data from Drone',
-                  style: TextStyle(fontSize: 20, color: Colors.white),
-                ),
-              ],
-            )
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Image.asset(
+            'assets/image/drone_image.png',
+            height: 200,
+            width: 200,
+            fit: BoxFit.contain,
+          ),
+          SizedBox(height: 20),
+          Text(
+            'Live Data from Drone',
+            style: TextStyle(fontSize: 20, color: Colors.white),
+          ),
+        ],
+      )
           : Text(
-              'Drone is not connected.\nPlease connect to view data.',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 20, color: Colors.white),
-            ),
+        'Drone is not connected.\nPlease connect to view data.',
+        textAlign: TextAlign.center,
+        style: TextStyle(fontSize: 20, color: Colors.white),
+      ),
     );
   }
 }
